@@ -47,6 +47,14 @@ ul {
   font-size: 24px;
   font-weight: 700;
 }
+@media screen and (max-width: 480px) {
+  .h1 {
+    font-size: 24px;
+  }
+  .h2 {
+    font-size: 16px;
+  }
+}
 
 .w7,
 .bold {

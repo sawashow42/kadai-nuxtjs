@@ -67,7 +67,10 @@
               />
               <span class="checkbox-label__span"></span>
             </label>
-            <p class="created-at">{{ todo.createdAt }}</p>
+            <p class="created-at">
+              <span class="pc">{{ getOnlyYear(todo.createdAt) }}</span>
+              <span>{{ getDateTimeExceptYear(todo.createdAt) }}</span>
+            </p>
             <p class="note">{{ todo.note }}</p>
             <img
               class="delete"
@@ -174,22 +177,26 @@ export default {
   align-items: center;
 }
 .is-done {
+  flex-shrink: 0;
   width: 21px;
   padding: 0;
 }
-.created-at {
+.created-at,
+.note,
+.delete {
+  flex-shrink: 0;
   margin-left: 24px;
+}
+.created-at {
   width: 144px;
 }
 .note {
-  margin-left: 24px;
   width: 382px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .delete {
-  margin-left: 24px;
   width: 21px;
 }
 .todo-list__header .created-at,
@@ -202,5 +209,23 @@ export default {
 
 .add__wrapper {
   max-width: 480px;
+}
+
+@media screen and (max-width: 480px) {
+  .pc {
+    display: none;
+  }
+  .main {
+    margin-top: 36px;
+    width: calc(100% - 16px * 2);
+  }
+  .created-at {
+    width: 96px;
+  }
+  .note {
+    flex-grow: 2;
+    flex-shrink: 1;
+    width: auto;
+  }
 }
 </style>
