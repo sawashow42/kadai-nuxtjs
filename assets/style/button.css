@@ -1,0 +1,58 @@
+button {
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Helvetica Neue",
+    Arial, Meiryo, sans-serif;
+}
+
+.btn__outer {
+  display: block;
+  height: 36px;
+  width: 240px;
+  margin: 0 auto;
+}
+
+.btn {
+  display: block;
+  height: 100%;
+  width: 100%;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 36px;
+  text-align: center;
+  border-radius: 9999px;
+}
+.btn:disabled {
+  pointer-events: none;
+}
+.btn:not(:disabled) {
+  cursor: pointer;
+}
+
+.btn__outer--small .btn {
+  height: auto;
+  width: auto;
+  line-height: 150%;
+  padding: 3px 16px;
+}
+
+.btn--blue {
+  color: var(--white1);
+  background-color: var(--blue1);
+  border: 1px solid var(--blue1);
+}
+.btn--blue:disabled,
+.btn--blue.disabled {
+  background-color: var(--white3);
+  border: 1px solid var(--white3);
+}
+
+.btn--white {
+  color: var(--blue1);
+  background-color: var(--white1);
+  border: 1px solid var(--blue1);
+}
+.btn--white:disabled,
+.btn--white.disabled {
+  color: var(--white3);
+  background-color: var(--white1);
+  border: 1px solid var(--white3);
+}
