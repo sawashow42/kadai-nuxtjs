@@ -1,0 +1,71 @@
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+a,
+li,
+ul,
+ol,
+span,
+pre,
+label {
+  color: var(--black1);
+  line-height: 150%;
+  font-size: 14px;
+  font-weight: 300;
+}
+
+p > a,
+span {
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+}
+a,
+a:hover {
+  text-decoration: none;
+}
+pre,
+input,
+textarea {
+  white-space: pre-wrap;
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Helvetica Neue",
+    Arial, Meiryo, sans-serif;
+}
+ul {
+  list-style: none;
+}
+
+.h1 {
+  font-size: 36px;
+  font-weight: 700;
+}
+.h2 {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.w7,
+.bold {
+  font-weight: bold;
+}
+.w6 {
+  font-weight: 600;
+}
+.w3 {
+  font-weight: normal;
+}
+
+.t-center {
+  text-align: center;
+}
+
+.link--blue {
+  color: var(--blue1);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+}

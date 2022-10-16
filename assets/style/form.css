@@ -1,0 +1,116 @@
+.form__row {
+  display: flex;
+  align-items: center;
+}
+
+.input,
+.textarea,
+.select {
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Helvetica Neue",
+    Arial, Meiryo, sans-serif;
+  font-size: 14px;
+  line-height: 100%;
+  text-align: left;
+  font-weight: 300;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  color: var(--black1);
+  background-color: var(--white1);
+  border: 1px solid var(--white2);
+  border-radius: 4px;
+  /* transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; */
+}
+
+.input,
+.select {
+  min-width: 0;
+  height: 32px;
+  padding: 5.5px 8px;
+}
+.textarea {
+  width: 100%;
+  padding: 5.5px 8px;
+  line-height: 150%;
+  resize: none;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--white3);
+}
+
+.form__row .input,
+.form__row .textarea,
+.form__row .select {
+  margin-left: 24px;
+  flex-grow: 2;
+}
+.form__row .label {
+  flex-shrink: 0;
+}
+
+.radio-label,
+.checkbox-label {
+  font-weight: 300;
+  line-height: 150%;
+  cursor: pointer;
+}
+.radio-label {
+  padding-left: 22px;
+}
+.checkbox-label {
+  padding-left: 29px;
+}
+.radio-label__input,
+.checkbox-label__input {
+  position: absolute;
+  z-index: -1;
+  opacity: 0;
+}
+.radio-label__span,
+.checkbox-label__span {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  border: 1px solid var(--white2);
+}
+.radio-label__span {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+}
+.checkbox-label__span {
+  width: 21px;
+  height: 21px;
+}
+.radio-label__input:checked ~ .radio-label__span::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--blue1);
+}
+.checkbox-label__input:checked ~ .checkbox-label__span {
+  background-color: var(--blue1);
+}
+.checkbox-label__input:checked ~ .checkbox-label__span::after {
+  content: "";
+  display: block;
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 7px;
+  height: 12px;
+  border: 1px solid white;
+  border-width: 0 2px 2px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}

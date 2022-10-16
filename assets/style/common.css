@@ -1,0 +1,56 @@
+:root {
+  --black1: #000000;
+  --white1: #ffffff;
+  --white2: #d9d9d9;
+  --white3: #999999;
+  --blue1: #00aaff;
+}
+
+*,
+*:before,
+*:after {
+  position: relative;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+*:focus {
+  outline: none;
+  background-color: none;
+}
+
+html {
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Helvetica Neue",
+    Arial, Meiryo, sans-serif;
+  font-size: 10px;
+  word-spacing: 1px;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+  background-color: var(--white1);
+}
+
+.main {
+  position: relative;
+  margin: 0 auto;
+  width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.mt16 {
+  margin-top: 16px;
+}
+.mt24 {
+  margin-top: 24px;
+}
+.mt48 {
+  margin-top: 48px;
+}
+.ml24 {
+  margin-left: 24px;
+}
