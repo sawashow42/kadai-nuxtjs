@@ -1,5 +1,8 @@
 <template>
   <div class="main">
+    <div v-if="loading === true">
+      <Loading />
+    </div>
     <h1 class="h1">チュートリアルToDoリスト</h1>
     <div class="mt48">
       <h2 class="h2">ToDoリスト</h2>
@@ -105,16 +108,19 @@
 </template>
 
 <script>
+import Loading from "~/components/Loading.vue";
 import firebase from "~/plugins/firebase";
 const db = firebase.firestore();
 
 export default {
   name: "IndexPage",
+  components: { Loading },
   data() {
     return {
       filter: null,
       todos: [],
       newLine: "",
+      loading: true,
     };
   },
   created() {
@@ -124,32 +130,32 @@ export default {
       .get()
       .then((snapshot) => {
         snapshot.forEach((doc) => {
-          console.log(doc.data());
           const padLeft = (num) => {
-          return ("00" + num).slice(-2);
+            return ("00" + num).slice(-2);
           };
-          const docDate = doc.data().createdAt.toDate()
+          const docDate = doc.data().createdAt.toDate();
           const year = docDate.getFullYear();
           const month = padLeft(docDate.getMonth() + 1);
           const date = padLeft(docDate.getDate());
           const hour = padLeft(docDate.getHours());
           const min = padLeft(docDate.getMinutes());
-          
+
           this.todos.push({
             id: doc.id,
             createdAt: `${year}/${month}/${date} ${hour}:${min}`,
             isDone: doc.data().isDone,
             note: doc.data().note,
           });
-          console.log(this.todos);
+          this.loading = false;
+          console.log(this.loading);
         });
       });
+    console.log(this.loading);
   },
   computed: {
     filteredTodos() {
       if (this.filter === null) {
         return this.todos;
-        f;
       } else {
         return this.todos.filter((todo) => todo.isDone === this.filter);
       }
@@ -176,11 +182,15 @@ export default {
       const hour = padLeft(now.getHours());
       const min = padLeft(now.getMinutes());
 
-      db.collection("users").doc("0").collection("todos").doc(now.getTime().toString()).set({
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        isDone: false,
-        note: this.newLine,
-      });
+      db.collection("users")
+        .doc("0")
+        .collection("todos")
+        .doc(now.getTime().toString())
+        .set({
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          isDone: false,
+          note: this.newLine,
+        });
       this.todos.push({
         id: now.getTime().toString(),
         isDone: false,
@@ -198,8 +208,8 @@ export default {
       // console.log(todo.isDone)
       db.collection("users").doc("0").collection("todos").doc(todo.id).update({
         isDone: todo.isDone,
-      })
-    }
+      });
+    },
   },
 };
 </script>
