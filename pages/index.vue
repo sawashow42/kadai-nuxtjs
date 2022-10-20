@@ -104,6 +104,11 @@
         </div>
       </div>
     </div>
+    <div class="mt48">
+      <div class="logoutButton">
+        <button class="btn btn--blue" @click="logout">ログアウト</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -147,10 +152,8 @@ export default {
             note: doc.data().note,
           });
           this.loading = false;
-          console.log(this.loading);
         });
       });
-    console.log(this.loading);
   },
   computed: {
     filteredTodos() {
@@ -205,10 +208,16 @@ export default {
       this.todos = this.todos.filter((todo) => todo.id !== id);
     },
     updateTodo(todo) {
-      // console.log(todo.isDone)
       db.collection("users").doc("0").collection("todos").doc(todo.id).update({
         isDone: todo.isDone,
       });
+    },
+    logout() {
+      firebase
+        .auth()
+        .signOut()
+        .then(console.log("Logout"))
+        .catch(console.log("error"));
     },
   },
 };
@@ -267,7 +276,9 @@ export default {
 .add__wrapper {
   max-width: 480px;
 }
-
+.logoutButton {
+  width: 240px;
+}
 @media screen and (max-width: 480px) {
   .pc {
     display: none;
