@@ -21,7 +21,11 @@
       </button>
     </div>
     <div class="mt48">
-      <p class="note">まだアカウントをお持ちでない方は<a href="">こちら</a></p>
+      <p class="note">
+        まだアカウントをお持ちでない方は<nuxt-link to="signup"
+          >こちら</nuxt-link
+        >
+      </p>
     </div>
   </div>
 </template>
@@ -41,8 +45,15 @@ export default {
       firebase
         .auth()
         .signInWithEmailAndPassword(this.userMail, this.userPass)
-        .then(console.log("succsess"))
-        .catch(console.log("error"));
+        .then(() => {
+          this.$router.push("/");
+        })
+        .catch((error) => {
+          let errorCode = error.code;
+          alert("error:" + errorCode);
+        });
+      this.userMail = "";
+      this.userPass = "";
     },
   },
 };

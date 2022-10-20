@@ -4,6 +4,7 @@
       <Loading />
     </div>
     <h1 class="h1">チュートリアルToDoリスト</h1>
+    <p class="p mt48">{{ currentUser }}さん</p>
     <div class="mt48">
       <h2 class="h2">ToDoリスト</h2>
       <div class="mt24 radio__wrapper">
@@ -126,9 +127,11 @@ export default {
       todos: [],
       newLine: "",
       loading: true,
+      currentUser: "hogehoge",
     };
   },
   created() {
+    console.log(this.currentUser);
     db.collection("users")
       .doc("0")
       .collection("todos")
@@ -216,8 +219,13 @@ export default {
       firebase
         .auth()
         .signOut()
-        .then(console.log("Logout"))
-        .catch(console.log("error"));
+        .then(() => {
+          this.$router.push("signin");
+        })
+        .catch((error) => {
+          let errorCode = error.code;
+          alert("error:" + errorCode);
+        });
     },
   },
 };

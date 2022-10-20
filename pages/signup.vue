@@ -25,7 +25,9 @@
       </button>
     </div>
     <div class="mt48">
-      <p class="note">既にアカウントをお持ちの方は<a href="">こちら</a></p>
+      <p class="note">
+        既にアカウントをお持ちの方は<nuxt-link to="signin">こちら</nuxt-link>
+      </p>
     </div>
   </div>
 </template>
@@ -54,14 +56,18 @@ export default {
       firebase
         .auth()
         .createUserWithEmailAndPassword(this.userMail, this.userPass)
-        .then(
+        .then(() => {
           db.collection("users").doc(this.userName).set({
             name: this.userName,
-          })
-        )
+          });
+        })
         .catch((error) => {
-          alert("error");
+          let errorCode = error.code;
+          alert("error:" + errorCode);
         });
+      this.userMail = "";
+      this.userName = "";
+      this.userPass = "";
     },
   },
 };
