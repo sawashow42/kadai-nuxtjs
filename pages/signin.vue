@@ -1,6 +1,6 @@
 <template>
   <div class="main">
-    <h1 class="h1">アカウント登録</h1>
+    <h1 class="h1">ログイン</h1>
     <div class="mt48">
       <div class="mt24 form_row">
         <label class="label" for="mail">メールアドレス</label>
@@ -10,58 +10,39 @@
         <label class="label" for="passwd">パスワード</label>
         <input class="input" id="passwd" type="text" v-model="userPass" />
       </div>
-      <div class="mt24 form_row">
-        <label class="label" for="name">名前</label>
-        <input class="input" id="name" type="text" v-model="userName" />
-      </div>
     </div>
     <div class="mt48">
       <button
         class="btn btn--blue"
-        @click="createUser"
-        :disabled="!(userMail && userPass && userName)"
+        @click="login"
+        :disabled="!(userMail && userPass)"
       >
-        アカウント登録
+        ログイン
       </button>
     </div>
     <div class="mt48">
-      <p class="note">既にアカウントをお持ちの方は<a href="">こちら</a></p>
+      <p class="note">まだアカウントをお持ちでない方は<a href="">こちら</a></p>
     </div>
   </div>
 </template>
 
 <script>
 import firebase from "~/plugins/firebase";
-const db = firebase.firestore();
 
 export default {
   data() {
     return {
       userMail: "",
-      userName: "",
       userPass: "",
     };
   },
   methods: {
-    createUser() {
-      if (
-        this.userMail === "" ||
-        this.userName === "" ||
-        this.userPass === ""
-      ) {
-        return;
-      }
+    login() {
       firebase
         .auth()
-        .createUserWithEmailAndPassword(this.userMail, this.userPass)
-        .then(
-          db.collection("users").doc(this.userName).set({
-            name: this.userName,
-          })
-        )
-        .catch((error) => {
-          alert("error");
-        });
+        .signInWithEmailAndPassword(this.userMail, this.userPass)
+        .then(console.log("succsess"))
+        .catch(console.log("error"));
     },
   },
 };
