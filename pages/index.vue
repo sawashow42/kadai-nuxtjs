@@ -128,36 +128,64 @@ export default {
       newLine: "",
       loading: true,
       currentUser: "hogehoge",
+      userUid: "",
     };
   },
   created() {
-    console.log(this.currentUser);
-    db.collection("users")
-      .doc("0")
-      .collection("todos")
-      .get()
-      .then((snapshot) => {
-        snapshot.forEach((doc) => {
-          const padLeft = (num) => {
-            return ("00" + num).slice(-2);
-          };
-          const docDate = doc.data().createdAt.toDate();
-          const year = docDate.getFullYear();
-          const month = padLeft(docDate.getMonth() + 1);
-          const date = padLeft(docDate.getDate());
-          const hour = padLeft(docDate.getHours());
-          const min = padLeft(docDate.getMinutes());
-
-          this.todos.push({
-            id: doc.id,
-            createdAt: `${year}/${month}/${date} ${hour}:${min}`,
-            isDone: doc.data().isDone,
-            note: doc.data().note,
+    // this.currentUser = firebase.auth().currentUser.uid;
+    // if (this.currentUser === null) {
+    //   this.$router.push("signin");
+    // }
+    // ログイン情報とってくる→currentUserにuidから辿った名前を入れる
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        console.log(user.uid);
+        this.userUid = user.uid;
+        console.log(this.userUid);
+        db.collection("users")
+          .doc(this.userUid)
+          .get()
+          .then((doc) => {
+            if (doc.exists) {
+              this.currentUser = doc.data().name;
+              console.log(this.currentUser);
+            }
+          })
+          .catch((error) => {
+            console.log(error);
           });
-          this.loading = false;
-        });
-      });
+        console.log(this.currentUser);
+        db.collection("users")
+          .doc(this.userUid)
+          .collection("todos")
+          .get()
+          .then((snapshot) => {
+            snapshot.forEach((doc) => {
+              const padLeft = (num) => {
+                return ("00" + num).slice(-2);
+              };
+              const docDate = doc.data().createdAt.toDate();
+              const year = docDate.getFullYear();
+              const month = padLeft(docDate.getMonth() + 1);
+              const date = padLeft(docDate.getDate());
+              const hour = padLeft(docDate.getHours());
+              const min = padLeft(docDate.getMinutes());
+
+              this.todos.push({
+                id: doc.id,
+                createdAt: `${year}/${month}/${date} ${hour}:${min}`,
+                isDone: doc.data().isDone,
+                note: doc.data().note,
+              });
+            });
+            this.loading = false;
+          });
+      } else {
+        this.$router.push("signin");
+      }
+    });
   },
+
   computed: {
     filteredTodos() {
       if (this.filter === null) {
@@ -189,7 +217,7 @@ export default {
       const min = padLeft(now.getMinutes());
 
       db.collection("users")
-        .doc("0")
+        .doc(this.userUid)
         .collection("todos")
         .doc(now.getTime().toString())
         .set({
@@ -207,13 +235,21 @@ export default {
     },
 
     deleteTodo(id) {
-      db.collection("users").doc("0").collection("todos").doc(id).delete();
+      db.collection("users")
+        .doc(this.userUid)
+        .collection("todos")
+        .doc(id)
+        .delete();
       this.todos = this.todos.filter((todo) => todo.id !== id);
     },
     updateTodo(todo) {
-      db.collection("users").doc("0").collection("todos").doc(todo.id).update({
-        isDone: todo.isDone,
-      });
+      db.collection("users")
+        .doc(this.userUid)
+        .collection("todos")
+        .doc(todo.id)
+        .update({
+          isDone: todo.isDone,
+        });
     },
     logout() {
       firebase

@@ -56,18 +56,20 @@ export default {
       firebase
         .auth()
         .createUserWithEmailAndPassword(this.userMail, this.userPass)
-        .then(() => {
-          db.collection("users").doc(this.userName).set({
+        .then((userCredential) => {
+          const uid = userCredential.user.uid;
+          console.log(uid);
+          db.collection("users").doc(uid).set({
             name: this.userName,
           });
+          this.userMail = "";
+          this.userName = "";
+          this.userPass = "";
         })
         .catch((error) => {
           let errorCode = error.code;
           alert("error:" + errorCode);
         });
-      this.userMail = "";
-      this.userName = "";
-      this.userPass = "";
     },
   },
 };
