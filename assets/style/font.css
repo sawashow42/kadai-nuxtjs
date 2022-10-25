@@ -22,7 +22,7 @@ p > a,
 span {
   font: inherit;
   letter-spacing: inherit;
-  /* color: inherit; */
+  color: inherit;
   color: --blue1;
 }
 a,

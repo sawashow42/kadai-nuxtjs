@@ -58,7 +58,6 @@ export default {
         .createUserWithEmailAndPassword(this.userMail, this.userPass)
         .then((userCredential) => {
           const uid = userCredential.user.uid;
-          console.log(uid);
           db.collection("users").doc(uid).set({
             name: this.userName,
           });
@@ -67,7 +66,7 @@ export default {
           this.userPass = "";
         })
         .catch((error) => {
-          let errorCode = error.code;
+          const errorCode = error.code;
           alert("error:" + errorCode);
         });
     },

@@ -47,13 +47,13 @@ export default {
         .signInWithEmailAndPassword(this.userMail, this.userPass)
         .then(() => {
           this.$router.push("/");
+          this.userMail = "";
+          this.userPass = "";
         })
         .catch((error) => {
-          let errorCode = error.code;
+          const errorCode = error.code;
           alert("error:" + errorCode);
         });
-      this.userMail = "";
-      this.userPass = "";
     },
   },
 };

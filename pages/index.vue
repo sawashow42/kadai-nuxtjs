@@ -114,75 +114,55 @@
 </template>
 
 <script>
-import Loading from "~/components/Loading.vue";
 import firebase from "~/plugins/firebase";
 const db = firebase.firestore();
 
 export default {
   name: "IndexPage",
-  components: { Loading },
   data() {
     return {
       filter: null,
       todos: [],
       newLine: "",
       loading: true,
-      currentUser: "hogehoge",
+      currentUser: "",
       userUid: "",
     };
   },
   created() {
-    // this.currentUser = firebase.auth().currentUser.uid;
-    // if (this.currentUser === null) {
-    //   this.$router.push("signin");
-    // }
-    // ログイン情報とってくる→currentUserにuidから辿った名前を入れる
     firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        console.log(user.uid);
+      if (!user) {
+        this.$router.push("signin");
+        return;
+      } else {
         this.userUid = user.uid;
-        console.log(this.userUid);
         db.collection("users")
           .doc(this.userUid)
           .get()
-          .then((doc) => {
+          .then(async (doc) => {
             if (doc.exists) {
-              this.currentUser = doc.data().name;
-              console.log(this.currentUser);
+              this.currentUser = await doc.data().name;
             }
-          })
-          .catch((error) => {
-            console.log(error);
           });
-        console.log(this.currentUser);
         db.collection("users")
           .doc(this.userUid)
           .collection("todos")
           .get()
           .then((snapshot) => {
-            snapshot.forEach((doc) => {
-              const padLeft = (num) => {
-                return ("00" + num).slice(-2);
-              };
-              const docDate = doc.data().createdAt.toDate();
-              const year = docDate.getFullYear();
-              const month = padLeft(docDate.getMonth() + 1);
-              const date = padLeft(docDate.getDate());
-              const hour = padLeft(docDate.getHours());
-              const min = padLeft(docDate.getMinutes());
-
+            snapshot.forEach(async (doc) => {
+              const docDate = await doc.data().createdAt.toDate();
+              const dateString = this.getDateString(docDate);
               this.todos.push({
                 id: doc.id,
-                createdAt: `${year}/${month}/${date} ${hour}:${min}`,
+                createdAt: dateString,
                 isDone: doc.data().isDone,
                 note: doc.data().note,
               });
             });
             this.loading = false;
           });
-      } else {
-        this.$router.push("signin");
-      }
+        }
+        unsubscribe();
     });
   },
 
@@ -202,11 +182,7 @@ export default {
     getDateTimeExceptYear(dateTime) {
       return dateTime.split("/").slice(1).join("/");
     },
-    addToDo() {
-      if (this.newLine === "") {
-        return;
-      }
-      const now = new Date();
+    getDateString(now) {
       const padLeft = (num) => {
         return ("00" + num).slice(-2);
       };
@@ -215,23 +191,31 @@ export default {
       const date = padLeft(now.getDate());
       const hour = padLeft(now.getHours());
       const min = padLeft(now.getMinutes());
-
+      return `${year}/${month}/${date} ${hour}:${min}`;
+    },
+    addToDo() {
+      if (this.newLine === "") {
+        return;
+      }
+      const now = new Date();
+      const dateString = this.getDateString(now);
       db.collection("users")
         .doc(this.userUid)
         .collection("todos")
-        .doc(now.getTime().toString())
-        .set({
+        .add({
           createdAt: firebase.firestore.FieldValue.serverTimestamp(),
           isDone: false,
           note: this.newLine,
+        })
+        .then((doc) => {
+          this.todos.push({
+            id: doc.id,
+            isDone: false,
+            note: this.newLine,
+            createdAt: dateString,
+          });
+          this.newLine = "";
         });
-      this.todos.push({
-        id: now.getTime().toString(),
-        isDone: false,
-        note: this.newLine,
-        createdAt: `${year}/${month}/${date} ${hour}:${min}`,
-      });
-      this.newLine = "";
     },
 
     deleteTodo(id) {
@@ -239,8 +223,10 @@ export default {
         .doc(this.userUid)
         .collection("todos")
         .doc(id)
-        .delete();
-      this.todos = this.todos.filter((todo) => todo.id !== id);
+        .delete()
+        .then(() => {
+          this.todos = this.todos.filter((todo) => todo.id !== id);
+        });
     },
     updateTodo(todo) {
       db.collection("users")
@@ -259,7 +245,7 @@ export default {
           this.$router.push("signin");
         })
         .catch((error) => {
-          let errorCode = error.code;
+          const errorCode = error.code;
           alert("error:" + errorCode);
         });
     },
