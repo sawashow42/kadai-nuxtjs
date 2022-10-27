@@ -130,27 +130,27 @@ export default {
     };
   },
   created() {
-    firebase.auth().onAuthStateChanged((user) => {
+    const unsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
       if (!user) {
         this.$router.push("signin");
         return;
       } else {
         this.userUid = user.uid;
-        db.collection("users")
+        await db.collection("users")
           .doc(this.userUid)
           .get()
-          .then(async (doc) => {
+          .then((doc) => {
             if (doc.exists) {
-              this.currentUser = await doc.data().name;
+              this.currentUser = doc.data().name;
             }
           });
-        db.collection("users")
+        await db.collection("users")
           .doc(this.userUid)
           .collection("todos")
           .get()
           .then((snapshot) => {
-            snapshot.forEach(async (doc) => {
-              const docDate = await doc.data().createdAt.toDate();
+            snapshot.forEach((doc) => {
+              const docDate = doc.data().createdAt.toDate();
               const dateString = this.getDateString(docDate);
               this.todos.push({
                 id: doc.id,
@@ -193,13 +193,13 @@ export default {
       const min = padLeft(now.getMinutes());
       return `${year}/${month}/${date} ${hour}:${min}`;
     },
-    addToDo() {
+    async addToDo() {
       if (this.newLine === "") {
         return;
       }
       const now = new Date();
       const dateString = this.getDateString(now);
-      db.collection("users")
+      await db.collection("users")
         .doc(this.userUid)
         .collection("todos")
         .add({
@@ -218,8 +218,8 @@ export default {
         });
     },
 
-    deleteTodo(id) {
-      db.collection("users")
+    async deleteTodo(id) {
+      await db.collection("users")
         .doc(this.userUid)
         .collection("todos")
         .doc(id)
@@ -228,8 +228,8 @@ export default {
           this.todos = this.todos.filter((todo) => todo.id !== id);
         });
     },
-    updateTodo(todo) {
-      db.collection("users")
+    async updateTodo(todo) {
+      await db.collection("users")
         .doc(this.userUid)
         .collection("todos")
         .doc(todo.id)
@@ -237,8 +237,8 @@ export default {
           isDone: todo.isDone,
         });
     },
-    logout() {
-      firebase
+    async logout() {
+      await firebase
         .auth()
         .signOut()
         .then(() => {

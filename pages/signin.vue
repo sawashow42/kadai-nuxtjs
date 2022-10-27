@@ -41,8 +41,8 @@ export default {
     };
   },
   methods: {
-    login() {
-      firebase
+    async login() {
+      await firebase
         .auth()
         .signInWithEmailAndPassword(this.userMail, this.userPass)
         .then(() => {

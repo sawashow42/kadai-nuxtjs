@@ -45,7 +45,7 @@ export default {
     };
   },
   methods: {
-    createUser() {
+    async createUser() {
       if (
         this.userMail === "" ||
         this.userName === "" ||
@@ -53,12 +53,12 @@ export default {
       ) {
         return;
       }
-      firebase
+      await firebase
         .auth()
         .createUserWithEmailAndPassword(this.userMail, this.userPass)
-        .then((userCredential) => {
+        .then(async (userCredential) => {
           const uid = userCredential.user.uid;
-          db.collection("users").doc(uid).set({
+          await db.collection("users").doc(uid).set({
             name: this.userName,
           });
           this.userMail = "";
