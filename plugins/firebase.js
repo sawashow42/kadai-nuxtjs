@@ -1,17 +1,18 @@
 import firebase from "firebase/app";
-import "firebase/firestore"
 import "firebase/auth";
+import "firebase/firestore";
 
 // TODO: ここを自分のプロジェクトの設定に合わせて変更してください
-// const config = {
-//   apiKey: "FIREBASE_API_KEY",
-//   authDomain: "FIREBASE_AUTH_DOMAIN",
-//   projectId: "YOUR_PROJECT_ID",
-//   storageBucket: "FIREBASE_STORAGE_BUCKET",
-//   messagingSenderId: "FIREBASE_MESSAGING_SENDER_ID",
-//   appId: "FIREBASE_APP_ID",
-//   measurementId: "FIREBASE_MEASUREMENT_ID",
-// };
+const config = {
+  apiKey: "AIzaSyByon7HyiMzYlpoh8629UzWOC6HAwMWVjg",
+  authDomain: "nuxt-todo-eed90.firebaseapp.com",
+  databaseURL: "https://nuxt-todo-eed90-default-rtdb.firebaseio.com",
+  projectId: "nuxt-todo-eed90",
+  storageBucket: "nuxt-todo-eed90.appspot.com",
+  messagingSenderId: "602724239045",
+  appId: "1:602724239045:web:edc42b5d071cfac34892ac",
+  measurementId: "G-9Y1DLGHCCX"
+};
 
 if (!firebase.apps.length) {
   firebase.initializeApp(config);

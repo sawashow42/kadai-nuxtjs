@@ -23,11 +23,12 @@ span {
   font: inherit;
   letter-spacing: inherit;
   color: inherit;
+  color: --blue1;
 }
 a,
-a:hover {
+/* a:hover {
   text-decoration: none;
-}
+} */
 pre,
 input,
 textarea {

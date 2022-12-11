@@ -1,6 +1,10 @@
 <template>
   <div class="main">
+    <div v-if="loading === true">
+      <Loading />
+    </div>
     <h1 class="h1">チュートリアルToDoリスト</h1>
+    <p class="p mt48">{{ currentUser }}さん</p>
     <div class="mt48">
       <h2 class="h2">ToDoリスト</h2>
       <div class="mt24 radio__wrapper">
@@ -63,6 +67,7 @@
                 class="checkbox-label__input"
                 :id="`checkbox-${todo.id}`"
                 type="checkbox"
+                @change="updateTodo(todo)"
                 v-model="todo.isDone"
               />
               <span class="checkbox-label__span"></span>
@@ -100,19 +105,67 @@
         </div>
       </div>
     </div>
+    <div class="mt48">
+      <div class="logoutButton">
+        <button class="btn btn--blue" @click="logout">ログアウト</button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import firebase from "~/plugins/firebase";
+const db = firebase.firestore();
 
 export default {
   name: "IndexPage",
-  data: () => ({
-    filter: null,
-    todos: [],
-    newLine: "",
-  }),
+  data() {
+    return {
+      filter: null,
+      todos: [],
+      newLine: "",
+      loading: true,
+      currentUser: "",
+      userUid: "",
+    };
+  },
+  created() {
+    const unsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
+      if (!user) {
+        this.$router.push("signin");
+        return;
+      } else {
+        this.userUid = user.uid;
+        await db.collection("users")
+          .doc(this.userUid)
+          .get()
+          .then((doc) => {
+            if (doc.exists) {
+              this.currentUser = doc.data().name;
+            }
+          });
+        await db.collection("users")
+          .doc(this.userUid)
+          .collection("todos")
+          .get()
+          .then((snapshot) => {
+            snapshot.forEach((doc) => {
+              const docDate = doc.data().createdAt.toDate();
+              const dateString = this.getDateString(docDate);
+              this.todos.push({
+                id: doc.id,
+                createdAt: dateString,
+                isDone: doc.data().isDone,
+                note: doc.data().note,
+              });
+            });
+            this.loading = false;
+          });
+        }
+        unsubscribe();
+    });
+  },
+
   computed: {
     filteredTodos() {
       if (this.filter === null) {
@@ -129,12 +182,7 @@ export default {
     getDateTimeExceptYear(dateTime) {
       return dateTime.split("/").slice(1).join("/");
     },
-    addToDo() {
-      if (this.newLine === "") {
-        return;
-      }
-
-      const now = new Date();
+    getDateString(now) {
       const padLeft = (num) => {
         return ("00" + num).slice(-2);
       };
@@ -143,17 +191,63 @@ export default {
       const date = padLeft(now.getDate());
       const hour = padLeft(now.getHours());
       const min = padLeft(now.getMinutes());
-
-      this.todos.push({
-        id: now.getTime(),
-        isDone: false,
-        note: this.newLine,
-        createdAt: `${year}/${month}/${date} ${hour}:${min}`,
-      });
-      this.newLine = "";
+      return `${year}/${month}/${date} ${hour}:${min}`;
     },
-    deleteTodo(id) {
-      this.todos = this.todos.filter((todo) => todo.id !== id);
+    async addToDo() {
+      if (this.newLine === "") {
+        return;
+      }
+      const now = new Date();
+      const dateString = this.getDateString(now);
+      await db.collection("users")
+        .doc(this.userUid)
+        .collection("todos")
+        .add({
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          isDone: false,
+          note: this.newLine,
+        })
+        .then((doc) => {
+          this.todos.push({
+            id: doc.id,
+            isDone: false,
+            note: this.newLine,
+            createdAt: dateString,
+          });
+          this.newLine = "";
+        });
+    },
+
+    async deleteTodo(id) {
+      await db.collection("users")
+        .doc(this.userUid)
+        .collection("todos")
+        .doc(id)
+        .delete()
+        .then(() => {
+          this.todos = this.todos.filter((todo) => todo.id !== id);
+        });
+    },
+    async updateTodo(todo) {
+      await db.collection("users")
+        .doc(this.userUid)
+        .collection("todos")
+        .doc(todo.id)
+        .update({
+          isDone: todo.isDone,
+        });
+    },
+    async logout() {
+      await firebase
+        .auth()
+        .signOut()
+        .then(() => {
+          this.$router.push("signin");
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          alert("error:" + errorCode);
+        });
     },
   },
 };
@@ -212,7 +306,9 @@ export default {
 .add__wrapper {
   max-width: 480px;
 }
-
+.logoutButton {
+  width: 240px;
+}
 @media screen and (max-width: 480px) {
   .pc {
     display: none;
